@@ -4,6 +4,7 @@ from gui import App
 
 def main():
     app = App()
+    app.auswahl_select(app.auswahl)
     app.mainloop()
 
 

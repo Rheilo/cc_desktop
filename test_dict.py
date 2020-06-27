@@ -1,13 +1,11 @@
 from pprint import pprint
-
-
-funktionen = {
-    'Daten Exportieren': None,
-    'Bounus DKP': None,
-    'Raid aus dem Log Anlegen': None,
-    'Finde Item IDs': None,
-    'Extrakt Loot-table': None,
-    'Optionen' : 'Optionen(self)'
+spieler = ['Mi', 'Rheilo']
+trans = {
+    'Mi' : 'Mi_',
+    'Rheilo': 'Rheîlo'
 }
+for s in spieler:
+    if s in trans:
+        spieler[spieler.index(s)] = trans[s]
 
-pprint(list(funktionen.keys()))
+pprint(spieler)

@@ -7,6 +7,7 @@ import threading as thread
 ## Die einzelnen GUI's für die Funktionen
 from gui_auswahl.daten_exportieren import DatenExportieren
 from gui_auswahl.optionen import Optionen
+from gui_auswahl.erstelle_raid import ErstelleRaid
 
 
 from pprint import pprint
@@ -118,9 +119,9 @@ class App(tk.Tk):
         tk.Tk.__init__(self)
         self.title('Canadian Crew <Patchwerk - EU>')
         self.funktionen = {
+            'Raid Anlegen': ErstelleRaid(self),
             'Daten Exportieren': DatenExportieren(self),
             'Bounus DKP': None,
-            'Raid aus dem Log Anlegen': None,
             'Finde Item IDs': None,
             'Extrakt Loot-table': None,
             'Optionen' : Optionen(self)
@@ -173,12 +174,30 @@ class App(tk.Tk):
 
 
     def auswahl_select(self, sender):
-        auswahl = sender.widget.get()
+        auswahl = self.auswahl.get()
         self.funktionen[auswahl].tkraise()
         if auswahl != 'Optionen':
             self.daten.tkraise()
+        ## DEBUG: Insert daten zum Testen
+        if auswahl == 'Raid Anlegen':
+            debug_daten = '''1 DKP für World-Buffs / Flask: 
+======================== 
+Merlana 
+
+6 DKP für World-Buffs / Flask: 
+======================== 
+Esperanca 
+Mi
+'''
+            i:int = 0
+            for z in debug_daten.split(r'\n'):
+                self.daten.insert(str(i)+'.0', z)
+                i = i+1
 
 
+    ##
+    ##  Verbindung zur Logik
+    ##
     def btn_run_clicked(self):
         fall = self.auswahl.get()
         if fall == 'Daten Exportieren':
@@ -188,14 +207,15 @@ class App(tk.Tk):
                 self.funktionen['Optionen'].eqdkp_name.get(),
                 self.funktionen['Optionen'].eqdkp_pass.get()
             )
+        elif fall == 'Raid Anlegen':
+            l.raid_anlegen(
+                'https://www.canadian-crew.de/admin/manage_raids.php?s=',
+                self.funktionen['Optionen'].eqdkp_name.get(),
+                self.funktionen['Optionen'].eqdkp_pass.get(),
+                self.daten,
+                True if self.funktionen[fall].auswahl.get() == 1 else False
+            )
 
-        print(self.auswahl.get())
-        print(self.funktionen['Optionen'].eqdkp_name.get())
-
-
-    ##
-    ##  Verbindung zur Logik
-    ##
     def btn_hole_item_ID_clicked(self):
         background_methode = thread.Thread(target=l.hole_item_id, args=(self,))
         background_methode.start()

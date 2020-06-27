@@ -5,6 +5,9 @@ import re
 import tkinter as tk
 from time import sleep
 from model import *
+from typing import List
+
+import requests
 
 
 CHROME_DRIVER_PATH = 'C:\\NextCloud\\python\\selenium\\chromedriver_win32_v83.exe'
@@ -120,3 +123,68 @@ def lade_daten_from_wowhead_by_npc(d:tk.Text, link:str):
         d.insert(str(zeile) + '.0', '['+loot.text+']' + '\t' + str(id) + '\n')
         zeile + 1
     browser.quit()
+
+
+def extrahiere_spieler_aus_log(link:str) -> List[str]:
+    if link[len(link)-1:] == '/':
+        link = link + 'boss=-3&difficulty=0'
+    else:
+        link = link + '/boss=-3&difficulty=0'
+    htm = requests.get(link)
+    print(htm.content)
+
+
+def extrahiere_spieler_aus_eingabe(d:tk.Text) -> List[str]:
+    antwort = []
+    zeilen:str = d.get('0.0', 'end-1c').splitlines()
+    for zeile in zeilen:
+        zeile = zeile.strip()
+        if zeile[0:1] == '=' or zeile[0:1] == '1' or \
+        zeile[0:1] == '2' or zeile[0:1] == '3' or \
+        zeile[0:1] == '4' or zeile[0:1] == '5' or\
+        zeile[0:1] == '6' or zeile == '':
+            continue
+        antwort.append(zeile)
+    return antwort
+
+
+def spieler_sonderfälle(spieler:List[str]) -> List[str]:
+    sonderfälle = {
+        'Mi' : 'Mi_'
+    }
+    for s in spieler:
+        if s in sonderfälle:
+            spieler[spieler.index(s)] = sonderfälle[s]
+    return spieler
+
+
+def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
+    spieler = []
+    if from_logs:
+        pass
+    else:
+        spieler.extend(extrahiere_spieler_aus_eingabe(d))
+    spieler = spieler_sonderfälle(spieler)
+
+    browser = webdriver.Chrome(CHROME_DRIVER_PATH)
+    browser.get(link)
+    if 'Zugriff verweigert' in browser.page_source:
+        __login(browser, usr, pas)
+    # xpath zum Button
+    # //button[@class='mainoption'][2]
+    btn_add_raid:WebElement = browser.find_element_by_xpath("//button[@class='mainoption'][2]")
+    btn_add_raid.click()
+    # Wähle das DKP Punkte Konto BWL aus
+    browser.find_element_by_xpath("//select[@id='event']//option[@value='11']").click()
+    # Öffne die Eingabe für die Raid-teilnemher
+    browser.find_element_by_xpath("//button[@id='raid_attendees_ms']").click()
+    # Eingabefeld Filter für Raid-Teilnehmer
+    suchfeld:WebElement = browser.find_element_by_xpath("//div[@class='ui-multiselect-menu ui-widget ui-widget-content ui-corner-all'][1]//div[@class='ui-multiselect-filter']/input")
+    # Allte Teilnehmer auswählen.
+    btn_yes_suche: WebElement = browser.find_element_by_xpath("//div[@class='ui-multiselect-menu ui-widget ui-widget-content ui-corner-all'][1]//a[@class='ui-multiselect-all']/span[2]")
+    for s in spieler:
+        suchfeld.send_keys(s)
+        sleep(0.25)
+        btn_yes_suche.click()
+        suchfeld.clear()
+    
