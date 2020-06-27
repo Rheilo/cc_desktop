@@ -7,11 +7,11 @@ from time import sleep
 from model import *
 
 
-CHROME_DRIVER_PATH = 'C:\\NextCloud\\python\\selenium\\chromedriver_win32_v80.exe'
+CHROME_DRIVER_PATH = 'C:\\NextCloud\\python\\selenium\\chromedriver_win32_v83.exe'
 
 
 def __extrahiere_itemid(url:str) -> int:
-    pattern = '[item=]{5}[\d]*'
+    pattern = r'[item=]{5}[\d]*'
     match = re.findall(pattern, url)
     item_id = str(match[0]).split('=')[1][:]
     return int(item_id)
@@ -76,7 +76,7 @@ def export_to_eqdkp(d:tk.Text, link:str, usr:str, pw:str):
 
         btn_add_item:WebElement = browser.find_element_by_xpath("//button[@id='add-item-btn']")
         zähler = 0
-        pattern = r'[a-zA-Z \[\]\w]+[\t]{1}[0-9]+[\t]{1}[a-zA-Z_\w]+[\t]{1}[0-9]+'
+        pattern = r'[a-zA-Z\' \[\]\w]+[\t]{1}[0-9]+[\t]{1}[a-zA-Z_\w]+[\t]{1}[0-9]+'
         zeilen:str = d.get('0.0', 'end-1c')
         match = re.findall(pattern, zeilen)
         for d in match:
