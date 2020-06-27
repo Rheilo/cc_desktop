@@ -79,7 +79,7 @@ def export_to_eqdkp(d:tk.Text, link:str, usr:str, pw:str):
 
         btn_add_item:WebElement = browser.find_element_by_xpath("//button[@id='add-item-btn']")
         zähler = 0
-        pattern = r'[a-zA-Z\' \[\]\w]+[\t]{1}[0-9]+[\t]{1}[a-zA-Z_\w]+[\t]{1}[0-9]+'
+        pattern = r'[a-zA-Z\' \[\]\w\-]+[\t]{1}[0-9]+[\t]{1}[a-zA-Z_\w]+[\t]{1}[0-9]+'
         zeilen:str = d.get('0.0', 'end-1c')
         match = re.findall(pattern, zeilen)
         for d in match:
@@ -104,7 +104,6 @@ def export_to_eqdkp(d:tk.Text, link:str, usr:str, pw:str):
                 sleep(0.25)
                 browser.find_elements_by_xpath("//div[@class='ui-multiselect-filter']/../..//li/a[@class='ui-multiselect-all']")[zähler+2].click()
                 browser.find_element_by_xpath("//input[@id='items_"+str(zähler)+"']/../..//button").click()
-            
     else:
         pass
 
@@ -161,7 +160,7 @@ def spieler_sonderfälle(spieler:List[str]) -> List[str]:
 def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
     spieler = []
     if from_logs:
-        pass
+        raise NotImplementedError()
     else:
         spieler.extend(extrahiere_spieler_aus_eingabe(d))
     spieler = spieler_sonderfälle(spieler)
@@ -172,8 +171,7 @@ def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
         __login(browser, usr, pas)
     # xpath zum Button
     # //button[@class='mainoption'][2]
-    btn_add_raid:WebElement = browser.find_element_by_xpath("//button[@class='mainoption'][2]")
-    btn_add_raid.click()
+    browser.find_element_by_xpath("//button[@class='mainoption'][2]").click()
     # Wähle das DKP Punkte Konto BWL aus
     browser.find_element_by_xpath("//select[@id='event']//option[@value='11']").click()
     # Öffne die Eingabe für die Raid-teilnemher
@@ -187,4 +185,7 @@ def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
         sleep(0.25)
         btn_yes_suche.click()
         suchfeld.clear()
-    
+
+
+def export_to_eqdkp_world_buffs(link:str, urs:str, pas:str, d:tk.Text) -> None:
+    pass

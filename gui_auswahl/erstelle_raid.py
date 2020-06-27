@@ -45,4 +45,3 @@ class ErstelleRaid(tk.Frame):
             padx = '8',
             pady = '4'
         )
-        

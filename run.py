@@ -1,4 +1,3 @@
-#from gui import App_
 from gui import App
 
 
