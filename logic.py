@@ -6,7 +6,8 @@ import tkinter as tk
 from time import sleep
 from model import *
 from typing import List
-
+from gui_auswahl.bonus_dkp import BonusDKP
+from logik_threading import LeseBonusDKP, SchreibeBonusDKP
 import requests
 
 
@@ -133,38 +134,38 @@ def extrahiere_spieler_aus_log(link:str) -> List[str]:
     print(htm.content)
 
 
-def extrahiere_spieler_aus_eingabe(d:tk.Text) -> List[str]:
-    antwort = []
-    zeilen:str = d.get('0.0', 'end-1c').splitlines()
-    for zeile in zeilen:
-        zeile = zeile.strip()
-        if zeile[0:1] == '=' or zeile[0:1] == '1' or \
-        zeile[0:1] == '2' or zeile[0:1] == '3' or \
-        zeile[0:1] == '4' or zeile[0:1] == '5' or\
-        zeile[0:1] == '6' or zeile == '':
-            continue
-        antwort.append(zeile)
-    return antwort
-
-
-def spieler_sonderfälle(spieler:List[str]) -> List[str]:
-    sonderfälle = {
-        'Mi' : 'Mi_'
-    }
-    for s in spieler:
-        if s in sonderfälle:
-            spieler[spieler.index(s)] = sonderfälle[s]
-    return spieler
+# def extrahiere_spieler_aus_eingabe(d:tk.Text, mit_punkte:bool=False) -> List[str]:
+#     antwort = []
+#     zeilen:str = d.get('0.0', 'end-1c').splitlines()
+#     punkte:str = None
+#     for zeile in zeilen:
+#         zeile = zeile.strip()
+#         if mit_punkte:
+#             if zeile[0:1] == '1' or zeile[0:1] == '2' or \
+#             zeile[0:1] == '3' or zeile[0:1] == '4' or \
+#             zeile[0:1] == '5' or zeile[0:1] == '6':
+#                 punkte = zeile[0:1]
+#         if zeile[0:1] == '=' or zeile[0:1] == '1' or \
+#         zeile[0:1] == '2' or zeile[0:1] == '3' or \
+#         zeile[0:1] == '4' or zeile[0:1] == '5' or\
+#         zeile[0:1] == '6' or zeile == '0' or zeile == '':
+#             continue
+#         if zeile in SONDERFÄLLE:
+#             zeile = SONDERFÄLLE[zeile]
+#         antwort.append(
+#             (punkte, zeile) if mit_punkte else zeile
+#         )
+#     return antwort
 
 
 def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
     spieler = []
+    thread_read_data = None
     if from_logs:
         raise NotImplementedError()
     else:
-        spieler.extend(extrahiere_spieler_aus_eingabe(d))
-    spieler = spieler_sonderfälle(spieler)
-
+        thread_read_data = LeseBonusDKP(d.get('0.0', 'end-1c'))
+        thread_read_data.start()
     browser = webdriver.Chrome(CHROME_DRIVER_PATH)
     browser.get(link)
     if 'Zugriff verweigert' in browser.page_source:
@@ -180,6 +181,11 @@ def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
     suchfeld:WebElement = browser.find_element_by_xpath("//div[@class='ui-multiselect-menu ui-widget ui-widget-content ui-corner-all'][1]//div[@class='ui-multiselect-filter']/input")
     # Allte Teilnehmer auswählen.
     btn_yes_suche: WebElement = browser.find_element_by_xpath("//div[@class='ui-multiselect-menu ui-widget ui-widget-content ui-corner-all'][1]//a[@class='ui-multiselect-all']/span[2]")
+    
+    if from_logs:
+        raise NotImplementedError()
+    else:
+        spieler.extend(thread_read_data.join())
     for s in spieler:
         suchfeld.send_keys(s)
         sleep(0.25)
@@ -187,5 +193,13 @@ def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
         suchfeld.clear()
 
 
-def export_to_eqdkp_world_buffs(link:str, urs:str, pas:str, d:tk.Text) -> None:
-    pass
+def export_to_eqdkp_world_buffs(
+        link:str, usr:str, pas:str, 
+        d:tk.Text, shared_data:BonusDKP, lock
+    ) -> None:
+    thread_read_data = LeseBonusDKP(d.get('0.0', 'end-1c'), True)
+    thread_read_data.start()
+    punkte = thread_read_data.join()
+    thread_schreibe_daten = SchreibeBonusDKP(usr, pas, link, shared_data, punkte, lock)
+    thread_schreibe_daten.start()
+    thread_schreibe_daten.join()

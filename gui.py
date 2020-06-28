@@ -81,9 +81,9 @@ class App(tk.Tk):
 ======================== 
 Merlana 
 
-6 DKP für World-Buffs / Flask: 
+4 DKP für World-Buffs / Flask: 
 ======================== 
-Esperanca 
+Rheilo 
 Mi
 '''
             i:int = 0
@@ -124,10 +124,12 @@ Mi
             bg_worker = thread.Thread(
                 target=l.export_to_eqdkp_world_buffs,
                 args=(
-                    self.funktionen[fall]._link_addr.get(),
+                    self.funktionen[fall].link_raid.get(),
                     self.funktionen['Optionen'].eqdkp_name.get(),
                     self.funktionen['Optionen'].eqdkp_pass.get(),
-                    self.daten
+                    self.daten,
+                    self.funktionen[fall],
+                    self.funktionen[fall].lock
                 )
             )
             bg_worker.start()
