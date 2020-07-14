@@ -99,7 +99,7 @@ class SchreibeBonusDKP(Thread):
                 f"//div[@class='ui-multiselect-menu ui-widget ui-widget-content ui-corner-all'][{i}]/div[@class='ui-widget-header ui-corner-all ui-multiselect-header ui-helper-clearfix ui-multiselect-hasfilter']/div[@class='ui-multiselect-filter']/input"
             )
             suchfeld.send_keys(n)
-            sleep(0.25)
+            sleep(0.5)
             while True:
                 if self._shared_data.play:
                     break

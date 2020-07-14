@@ -15,7 +15,8 @@ class BonusDKP(tk.Frame):
             sticky = 'nws'
         )
         self.link_raid = tk.StringVar()
-        self.link_raid.set('https://canadian-crew.de/admin/manage_raids.php?s=&r=63&upd=true') # DEBUG: Bei realeas diese Zeile Löschen.
+        #self.link_raid.set('https://canadian-crew.de/admin/manage_raids.php?s=&r=63&upd=true') # DEBUG: Bei realeas diese Zeile Löschen.
+        self.link_raid.set('https://www.canadian-crew.de/admin/manage_raids.php?s=&r=113&upd=true')
         self.__link = tk.Entry(self,
             name = 'tb_link',
             textvariable = self.link_raid

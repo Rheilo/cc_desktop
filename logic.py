@@ -188,7 +188,7 @@ def raid_anlegen(link:str, usr:str, pas:str, d:tk.Text, from_logs:bool) -> None:
         spieler.extend(thread_read_data.join())
     for s in spieler:
         suchfeld.send_keys(s)
-        sleep(0.25)
+        sleep(0.7)
         btn_yes_suche.click()
         suchfeld.clear()
 
@@ -203,3 +203,10 @@ def export_to_eqdkp_world_buffs(
     thread_schreibe_daten = SchreibeBonusDKP(usr, pas, link, shared_data, punkte, lock)
     thread_schreibe_daten.start()
     thread_schreibe_daten.join()
+
+
+# https://www.canadian-crew.de/index.php/Points.html?s=&sort=7%7cdesc&mdkpid=0&filter=&show_twinks=1
+#   Finde alle Namen von EQDKP
+#     //table//tr/td[2]/a/span
+#   Finde Punkte zu den Namen
+#     //table//tr/td[9]
