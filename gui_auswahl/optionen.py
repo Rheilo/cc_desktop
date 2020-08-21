@@ -8,10 +8,6 @@ class Optionen(tk.Frame):
         tk.Frame.__init__(self, master)
         self.eqdkp_name = tk.StringVar()
         self.eqdkp_pass = tk.StringVar()
-        ##
-        ## DEBUG: Das setzen von eqdkp_name und eqdkp_pass muss entfernt werden.
-        self.eqdkp_name.set('Rheilo')
-        self.eqdkp_pass.set('Pass!234')
         self._erstelle_gui()
 
 
