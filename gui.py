@@ -72,6 +72,7 @@ class App(tk.Tk):
 
     def auswahl_select(self, sender):
         auswahl = self.auswahl.get()
+        print(auswahl)
         self.funktionen[auswahl].tkraise()
         if auswahl != 'Optionen':
             self.daten.tkraise()
